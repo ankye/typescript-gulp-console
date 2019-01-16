@@ -1,2 +1,2 @@
 # typescript-gulp-console
-typescript node 脚本模板
+typescript node template
