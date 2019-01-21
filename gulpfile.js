@@ -1,50 +1,48 @@
 var gulp = require("gulp");
+var ts = require('gulp-typescript')
+var sourcemaps = require('gulp-sourcemaps')
+var clean = require('gulp-clean');
+var pump = require('pump');
+
 var browserify = require("browserify");
 var source = require("vinyl-source-stream");
-var watchify = require("watchify");
 var tsify = require("tsify");
 var gutil = require("gulp-util");
-var uglify = require('gulp-uglify');
+var babelify = require("babelify");
 
-var sourcemaps = require('gulp-sourcemaps');
-var buffer = require('vinyl-buffer');
+var tsProject = ts.createProject('tsconfig.json')
 
 
-// var ts = require("gulp-typescript");
-// var tsProject = ts.createProject("tsconfig.json");
-var paths = {
-    pages: ['src/*.html']
+var PATH = {
+    pages: ['src/*.png'],
+    outdir: "dist"
 };
 
-var watchedBrowserify = watchify(browserify({
-    basedir: '.',
-    debug: true,
-    entries: ['src/main.ts'],
-    cache: {},
-    packageCache: {}
-}).plugin(tsify));
 
-
-gulp.task("copy-html",function(){
-    return gulp.src(paths.pages)
-        .pipe(gulp.dest("dist"));
+gulp.task('clean', function (cb) {
+    pump([
+        gulp.src('./dist/*.*'),
+        clean()
+    ], cb)
 })
 
-function bundle(){
-    return watchedBrowserify
-    .transform('babelify', {
-        presets: ['es2015'],
-        extensions: ['.ts']
-    })
-    .bundle()
-    .pipe(source('bundle.js'))
-    .pipe(buffer())
-    .pipe(sourcemaps.init({loadMaps: true}))
-    .pipe(uglify())
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('dist'));
-};
+gulp.task('compile-ts', gulp.series("clean", function () {
+    return tsProject.src()
+        .pipe(sourcemaps.init())
+        .pipe(tsProject())
+        .pipe(sourcemaps.write("./"))
+        .pipe(gulp.dest(PATH.outdir))
+}));
 
-gulp.task("default",gulp.series("copy-html", bundle));
-watchedBrowserify.on("update", bundle);
-watchedBrowserify.on("log", gutil.log);
+
+
+gulp.task("copy-config", function () {
+    return gulp.src(PATH.pages)
+        .pipe(gulp.dest(PATH.outdir));
+});
+
+
+gulp.task("default", gulp.series("copy-config", "compile-ts"));
+
+
+gulp.watch("src/**", gulp.series("compile-ts"));

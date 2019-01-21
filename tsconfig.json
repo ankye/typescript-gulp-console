@@ -1,10 +1,28 @@
 {
     "files":[
-        "src/greet.ts",
         "src/main.ts"
     ],
     "compilerOptions": {
-        "noImplicitAny": true,
-        "target": "es2015"
-    }
+        "module":"commonjs",
+        "noImplicitAny": false,
+        "sourceMap": true,
+        "outDir": "./dist",
+        "target": "es2015",
+        "declaration": true,
+        "noUnusedLocals": true, 
+        "noUnusedParameters": true,
+       // "watch":true,
+        "lib": [ "es2015", "dom" ]
+      },
+  
+    "include": [
+        "src"
+    ],
+    "typeRoots": [
+        "node_modules/@types"
+    ],
+    "lib": [
+        "es2015",
+        "dom"
+    ]
 }

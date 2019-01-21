@@ -1,17 +1,4 @@
-import { sayHello } from "./greet"
+import drawMap from "./draw";
 
-function main(compiler:string):void {
-    console.log(`Hello from ${compiler}`)
-}
-
-function showHello(divName: string, name: string) {
-    const elt = document.getElementById(divName);
-    elt.innerText = sayHello(name);
-}
-
-showHello("greeting", "TypeScript");
-
-
-main("TypeScript1")
-
-console.log(sayHello("Greet Script"))
+drawMap("map", 750, 1136, 50, 50);
+console.log("hello2");
